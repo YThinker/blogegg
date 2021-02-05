@@ -29,12 +29,13 @@ class UserService extends Service {
         switch(verifyType){
             case 'normal':
                 captcha = SvgCaptcha.create(captchaconf);
+                ctx.session[`verifyCode${symbolCode}`] = captcha.text;
                 break;
             case 'mathExpr':
                 captcha = SvgCaptcha.createMathExpr(captchaconf)
+                ctx.session[`mathVerifyCode${symbolCode}`] = captcha.text;
                 break;
         }
-        ctx.session[`verifyCode${symbolCode}`] = captcha.text;
         return captcha;
     };
 
