@@ -6,5 +6,5 @@
 module.exports = app => {
   const { router, controller } = app;
   router.get('/getUserInfo', controller.home.getUserInfo);
-  router.post('/getverifycode', controller.home.getVerifyCode);
+  router.get('/getVerifyCode', controller.home.getVerifyCode);
 };

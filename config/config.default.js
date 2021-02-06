@@ -40,7 +40,7 @@ module.exports = appInfo => {
       enable: false,
       // useSession: true,
     },
-    domainWhiteList: ['http://127.0.0.1:3000'],
+    domainWhiteList: ['http://localhost:3000'],
   };
   //cors跨域配置
   config.cors = {
