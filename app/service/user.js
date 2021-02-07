@@ -12,7 +12,7 @@ class UserService extends Service {
     };
 
     // 1 登录验证码 2 注册验证码 3...
-    async getVerifyCode(verifyType='normal', symbolCode=1) {
+    async getVerifyCode(symbolCode=1, verifyType='normal') {
         const { app, ctx } = this;
 
         let captcha;

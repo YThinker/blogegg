@@ -38,7 +38,10 @@ module.exports = appInfo => {
   config.security = {
     csrf: {
       enable: false,
-      // useSession: true,
+      headerName: 'x-csrf-token',
+      useSession: true,
+      cookieName: 'x-csrf-token',
+      sessionName: 'x-csrf-token',
     },
     domainWhiteList: ['http://localhost:3000'],
   };
