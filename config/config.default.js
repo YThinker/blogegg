@@ -6,11 +6,9 @@
  * @param {Egg.EggAppInfo} appInfo app info
  */
 module.exports = appInfo => {
-  /**
-   * built-in config
-   * @type {Egg.EggAppConfig}
-   **/
+
   const config = exports = {};
+  //mysql配置
   config.mysql = {
     // 单数据库信息配置
     client: {
@@ -20,28 +18,24 @@ module.exports = appInfo => {
       password: 'yxk980102',
       database: 'eggblog',
     },
-    // 是否加载到 app 上，默认开启
-    app: true,
-    // 是否加载到 agent 上，默认关闭
-    agent: false,
   };
-
-  config.session = {
-    key: "SESSION_ID",
-    maxAge: 24*3600*1000,
-    httpOnly: true,
-    encrypt: true,
-    renew: true // 延长会话有效期
+  //redis配置
+  config.redis = {
+    client: {
+      host: 'localhost',
+      port: '6379',
+      password: '',
+      db: 0,
+    },
   };
-
+  //jwt配置
+  config.jwt = {
+    secret: "CdU8N97xIo"
+  };
   //csrf以及域名白名单配置
   config.security = {
     csrf: {
       enable: false,
-      headerName: 'x-csrf-token',
-      useSession: true,
-      cookieName: 'x-csrf-token',
-      sessionName: 'x-csrf-token',
     },
     domainWhiteList: ['http://localhost:3000'],
   };
@@ -49,7 +43,6 @@ module.exports = appInfo => {
   config.cors = {
     origin: 'http://localhost:3000',
     allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
-    credentials: true,
   };
 
   // use for cookie sign key, should change to your own and keep security
