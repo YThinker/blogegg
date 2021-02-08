@@ -1,6 +1,7 @@
 'use strict';
 const Service = require('egg').Service;
 
+const encrypt = require('../public/util.js').encrypt;
 const SvgCaptcha = require('svg-captcha');
 
 class UserService extends Service {
@@ -36,7 +37,7 @@ class UserService extends Service {
                 await app.redis.set(`mathVerifyCode${symbolCode}${tempAuth}`, captcha.text, 'EX', 300);
                 break;
         }
-        return captcha;
+        return encrypt(Buffer.from(captcha.data).toString('base64'));
     };
 
 }
