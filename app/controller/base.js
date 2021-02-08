@@ -3,22 +3,13 @@ const Controller = require('egg').Controller;
 // 10001未登录 10002权限不足
 
 class BaseController extends Controller {
-    async success(data) {
+    async success(data, errorCode=200, message='success') {
       const { ctx } = this;
       ctx.body = {
-        ErrorCode: 0,
-        message: 'success',
+        ErrorCode: errorCode,
+        message: message,
         data: data,
       }
-    };
-
-    async error(errorCode=500, message="error", data={}) {
-        const { ctx } = this;
-        ctx.body = {
-            ErrorCode: errorCode,
-            message: message,
-            data: data,
-        }
     };
 
     async checkLogin() {

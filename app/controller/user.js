@@ -12,18 +12,23 @@ class UserController extends BaseController {
     };
 
     async getVerifyCode() {
-      const { ctx, service } = this;
-      console.log(ctx.query.verifySymbol);
+      const { ctx, service, app } = this;
+
       let verifySymbol = ctx.query.verifySymbol || 1;
-      const captcha = await service.user.getVerifyCode(verifySymbol);
-      console.log(`verifyCode${verifySymbol}:`,ctx.session[`verifyCode${verifySymbol}`]);
+      let tempAuth = ctx.get('TempAuth');
+      if(!tempAuth){
+        this.success(null, 500, 'token error');
+        return;
+      } 
+      const captcha = await service.user.setVerifyCode(tempAuth, verifySymbol);
+
+      let verifyCap = await app.redis.get(`verifyCode${verifySymbol}${tempAuth}`);
+      // console.log(`verifyCode${verifySymbol}${tempAuth}:`, verifyCap);
       this.success({imgData: Buffer.from(captcha.data).toString('base64')});
     };
 
     async login() {
       const { ctx, service } = this;
-      // 调用 rotateCsrfSecret 刷新用户的 CSRF token
-      ctx.rotateCsrfSecret();
     };
 }
 

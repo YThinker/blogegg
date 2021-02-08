@@ -12,7 +12,7 @@ class UserService extends Service {
     };
 
     // 1 登录验证码 2 注册验证码 3...
-    async getVerifyCode(symbolCode=1, verifyType='normal') {
+    async setVerifyCode(tempAuth, symbolCode=1, verifyType='normal') {
         const { app, ctx } = this;
 
         let captcha;
@@ -29,11 +29,11 @@ class UserService extends Service {
         switch(verifyType){
             case 'normal':
                 captcha = SvgCaptcha.create(captchaconf);
-                ctx.session[`verifyCode${symbolCode}`] = captcha.text;
+                await app.redis.set(`verifyCode${symbolCode}${tempAuth}`, captcha.text, 'EX', 300);
                 break;
             case 'mathExpr':
                 captcha = SvgCaptcha.createMathExpr(captchaconf)
-                ctx.session[`mathVerifyCode${symbolCode}`] = captcha.text;
+                await app.redis.set(`mathVerifyCode${symbolCode}${tempAuth}`, captcha.text, 'EX', 300);
                 break;
         }
         return captcha;
