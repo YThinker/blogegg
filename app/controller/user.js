@@ -16,12 +16,13 @@ class UserController extends BaseController {
 
       let verifySymbol = ctx.query.verifySymbol || 1;
       let tempAuth = ctx.get('TempAuth');
+      
       if(!tempAuth){
         this.success(null, 500, 'token error');
         return;
       } 
-      const captcha = await service.user.setVerifyCode(tempAuth, verifySymbol);
 
+      const captcha = await service.user.setVerifyCode(tempAuth, verifySymbol);
       let verifyCap = await app.redis.get(`verifyCode${verifySymbol}${tempAuth}`);
       // console.log(`verifyCode${verifySymbol}${tempAuth}:`, verifyCap);
       this.success({imgData: Buffer.from(captcha.data).toString('base64')});
