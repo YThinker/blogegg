@@ -6,9 +6,9 @@ const SvgCaptcha = require('svg-captcha');
 
 class UserService extends Service {
 
-    async getUserInfo() {
+    async getUserInfo(userId) {
         const { app } = this;
-        const userInfo = await app.mysql.select('user');
+        const userInfo = await app.mysql.get('user', { userId: userId });
         return userInfo;
     };
 
@@ -30,14 +30,24 @@ class UserService extends Service {
         switch(verifyType){
             case 'normal':
                 captcha = SvgCaptcha.create(captchaconf);
-                await app.redis.set(`verifyCode${symbolCode}${tempAuth}`, captcha.text, 'EX', 300);
+                await app.redis.set(`verifyCode${symbolCode}${tempAuth}`, captcha.text.toLowerCase(), 'EX', 300);
                 break;
             case 'mathExpr':
                 captcha = SvgCaptcha.createMathExpr(captchaconf)
-                await app.redis.set(`mathVerifyCode${symbolCode}${tempAuth}`, captcha.text, 'EX', 300);
+                await app.redis.set(`mathVerifyCode${symbolCode}${tempAuth}`, captcha.text.toLowerCase(), 'EX', 300);
                 break;
         }
         return encrypt(Buffer.from(captcha.data).toString('base64'));
+    };
+
+    async login(userId, password) {
+        const { app, ctx, service } = this;
+        const userInfo = await service.user.getUserInfo(userId);
+        console.log(userInfo);
+        if(userInfo && userInfo.password !== password){
+            return false;
+        }
+        return await app.jwt.sign({ userId: userInfo.userId }, app.config.jwt.secret);
     };
 
 }
