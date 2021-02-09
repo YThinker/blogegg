@@ -25,7 +25,7 @@ class UserController extends BaseController {
       const captcha = await service.user.setVerifyCode(tempAuth, verifySymbol);
       let verifyCap = await app.redis.get(`verifyCode${verifySymbol}${tempAuth}`);
       // console.log(`verifyCode${verifySymbol}${tempAuth}:`, verifyCap);
-      this.success({imgData: Buffer.from(captcha.data).toString('base64')});
+      this.success({imgData: captcha});
     };
 
     async login() {
