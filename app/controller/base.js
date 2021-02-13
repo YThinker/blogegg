@@ -11,6 +11,12 @@ class BaseController extends Controller {
         data: data,
       }
     };
+    async error(message="error", errorCode=500) {
+      this.ctx.body = {
+        ErrorCode: errorCode,
+        message: message,
+      };
+    }
 
     async checkLogin() {
 

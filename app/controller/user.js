@@ -17,7 +17,7 @@ class UserController extends BaseController {
       let tempAuth = ctx.get('TempAuth');
       
       if(!tempAuth){
-        this.success(null, 500, 'token error');
+        this.error('token error');
         return;
       } 
 
@@ -39,17 +39,19 @@ class UserController extends BaseController {
 
       const captchaText = await app.redis.get(`verifyCode1${tempAuth}`);
       if(!captchaText){
-        this.success(null, 500, '验证码已过期');
+        this.error('验证码已过期');
         return;
       }
-      if(verifyCode !== captchaText.toLowerCase()){
-        this.success(null, 500, '验证码错误');
+      if(verifyCode.toLowerCase() !== captchaText.toLowerCase()){
+        this.error('验证码错误');
         return;
       }
 
-      const token = await service.user.login(userId, password);
+      let pwd = password.slice(10, password.length-10);
+      console.log(pwd);
+      const token = await service.user.login(userId, pwd);
       if(!token){
-        this.success(null, 500, '用户名或密码错误');
+        this.error('用户名或密码错误');
         return;
       } else {
         this.success({ token: token });

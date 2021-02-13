@@ -44,7 +44,7 @@ class UserService extends Service {
         const { app, ctx, service } = this;
         const userInfo = await service.user.getUserInfo(userId);
         console.log(userInfo);
-        if(userInfo && userInfo.password !== password){
+        if(userInfo && userInfo.password.slice(10, userInfo.password.length-10) !== password){
             return false;
         }
         return await app.jwt.sign({ userId: userInfo.userId }, app.config.jwt.secret);
