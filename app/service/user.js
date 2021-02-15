@@ -6,13 +6,15 @@ const SvgCaptcha = require('svg-captcha');
 
 class UserService extends Service {
 
-    async getUserInfo(userId) {
+    async getUserInfo(content, type='userId') {
         const { app } = this;
-        const userInfo = await app.mysql.get('user', { userId: userId });
+        let option = {};
+        option[type] = content;
+        const userInfo = await app.mysql.get('user', option);
         return userInfo;
     };
 
-    // 1 登录验证码 2 注册验证码 3...
+    // 1 登录验证码 2 注册验证码 3 忘记密码
     async setVerifyCode(tempAuth, symbolCode=1, verifyType='normal') {
         const { app, ctx } = this;
 
@@ -22,10 +24,13 @@ class UserService extends Service {
             width:100,
             height:40,
             fontSize: 40,
-            ignoreChars: 'oO01lIijJ', // 验证码字符中排除 0o1i
+            ignoreChars: 'oO01lIijJ', // 验证码字符中排除
             noise: 4, // 干扰线条的数量
             color: true, // 验证码的字符是否有颜色，默认没有，如果设定了背景，则默认有
-            background: '#dbd0b1' // 验证码图片背景颜色
+            background: '#dbd0b1', // 验证码图片背景颜色
+            mathMin: 20, // the minimum value the math expression can be
+            mathMax: 90, // the maximum value the math expression can be
+            mathOperator: '+-' // The operator to use, +, - or +- (for random + or -)
         }
         switch(verifyType){
             case 'normal':
@@ -34,7 +39,7 @@ class UserService extends Service {
                 break;
             case 'mathExpr':
                 captcha = SvgCaptcha.createMathExpr(captchaconf)
-                await app.redis.set(`mathVerifyCode${symbolCode}${tempAuth}`, captcha.text.toLowerCase(), 'EX', 300);
+                await app.redis.set(`verifyCode${symbolCode}${tempAuth}`, captcha.text.toLowerCase(), 'EX', 300);
                 break;
         }
         return encrypt(Buffer.from(captcha.data).toString('base64'));
@@ -48,6 +53,15 @@ class UserService extends Service {
             return false;
         }
         return await app.jwt.sign({ userId: userInfo.userId }, app.config.jwt.secret);
+    };
+
+    async register(params) {
+        const { app, ctx, service } = this;
+        const result = await app.mysql.insert('user', params);
+        if(!result.affectedRows){
+            return false;
+        }
+        return await app.jwt.sign({ userId: params.userId }, app.config.jwt.secret);
     };
 
 }
