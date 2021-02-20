@@ -61,7 +61,7 @@ class UserController extends BaseController {
         this.error('用户名或密码错误');
         return;
       } else {
-        this.success({ token: token });
+        this.success({ token });
       }
     };
 
@@ -76,7 +76,7 @@ class UserController extends BaseController {
       let type = ctx.query.type || 'userId';
       let content = ctx.query.content;
       if(content){
-        this.error('null error');
+        this.error('null field');
       }
 
       const typeCN = type==='nickName'?'昵称':'用户名'
@@ -87,20 +87,25 @@ class UserController extends BaseController {
         this.error(`该${typeCN}已被注册`);
         return;
       } else {
-        this.success({});
+        this.success();
       }
     };
 
     /**
      * 注册
-     * @param 
+     * @param userId
+     * @param nickName
+     * @param password
+     * @param verifyCode
+     * @param question
+     * @param answer
      */
     async register() {
       const registerValidate = validate.register;
       const {ctx, service, app} = this;
       ctx.validate(registerValidate);
 
-      let {...params} = ctx.request.body;
+      let params = ctx.request.body;
       let tempAuth = ctx.get('TempAuth');
 
       const captchaText = await app.redis.get(`verifyCode2${tempAuth}`);
@@ -131,14 +136,53 @@ class UserController extends BaseController {
         this.error('注册失败，未知错误');
         return;
       } else {
-        this.success({ token: token });
+        this.success({token});
       }
+    };
+
+    /**
+     * 获取密保问题
+     */
+    async getSecurityQuestion() {
+      const {ctx, service} = this;
+
+      const userId = ctx.query.userId;
+      if(!userId){
+        this.error('null field');
+        return;
+      }
+
+      const userInfo = await service.user.getUserInfo(userId);
+      if(!userInfo){
+        this.error('该用户不存在');
+        return;
+      }
+
+      const question = userInfo.question;
+      return this.success({question});
     };
 
     /**
      * 忘记密码
      */
-    async forgetPwd() {};
+    async forgetPwd() {
+      const forgetPwdValidate = validate.forgetPwd;
+      const {ctx, service, app} = this;
+      ctx.validate(forgetPwdValidate);
+
+      let params = ctx.request.body;
+      let tempAuth = ctx.get('TempAuth');
+
+      const captchaText = await app.redis.get(`verifyCode3${tempAuth}`);
+      if(!captchaText){
+        this.error('验证码已过期');
+        return;
+      }
+      if(params.verifyCode.toLowerCase() !== captchaText.toLowerCase()){
+        this.error('验证码错误');
+        return;
+      }
+    };
 
     /**
      * 修改用户信息

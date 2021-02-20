@@ -12,4 +12,10 @@ module.exports = {
         question: { type: 'string', required: true, allowEmpty: false, },
         answer: { type: 'string', required: true, allowEmpty: false, },
     },
+    forgetPwd: {
+        userId: { type: 'string', required: true, allowEmpty: false, },
+        password: { type: 'string', required: true, allowEmpty: false, },
+        verifyCode: { type: 'string', required: true, allowEmpty: false, },
+        answer: { type: 'string', required: true, allowEmpty: false, },
+    },
 };

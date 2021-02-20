@@ -9,6 +9,7 @@ module.exports = app => {
   router.post('/login', controller.user.login);
   router.get('/validateRegisted', controller.user.validateRegisted);
   router.post('/register', controller.user.register);
+  router.get('/getSecurityQuestion', controller.user.getSecurityQuestion);
   router.post('/forgetPwd', controller.user.forgetPwd);
   router.post('/changeUserInfo', jwt, controller.user.changeUserInfo);
 };
