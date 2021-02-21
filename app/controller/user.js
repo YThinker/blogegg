@@ -61,7 +61,8 @@ class UserController extends BaseController {
         this.error('用户名或密码错误');
         return;
       } else {
-        this.success({ token });
+        const userInfoSecurity = await service.user.getUserInfoSecurity(userId, 'userId');
+        this.success({ token, userInfoSecurity });
       }
     };
 
@@ -136,7 +137,8 @@ class UserController extends BaseController {
         this.error('注册失败，未知错误');
         return;
       } else {
-        this.success({token});
+        const userInfoSecurity = await service.user.getUserInfoSecurity(params.userId, 'userId');
+        this.success({token, userInfoSecurity});
       }
     };
 
@@ -181,6 +183,27 @@ class UserController extends BaseController {
       if(params.verifyCode.toLowerCase() !== captchaText.toLowerCase()){
         this.error('验证码错误');
         return;
+      }
+
+      const userInfo = await service.user.getUserInfo(params.userId);
+      if(!userInfo){
+        this.error('该用户不存在');
+        return;
+      }
+      if(userInfo.answer.slice(10, userInfo.password.length-10) !== params.answer.slice(10, userInfo.password.length-10)){
+        this.error('密保答案错误');
+        return;
+      }
+
+      const id = userInfo.id;
+      const userId = params.userId;
+      const password = params.password;
+      const updateParams = {id, userId, password};
+      const result = await service.user.updateUserInfo(updateParams);
+      if(!result){
+        this.error('修改密码失败，未知错误');
+      } else {
+        this.success();
       }
     };
 

@@ -14,6 +14,20 @@ class UserService extends Service {
         return userInfo;
     };
 
+    async getUserInfoSecurity(content, type='userId') {
+        const { app } = this;
+        let option = {};
+        option[type] = content;
+        const {id, password, question, answer, ...userInfo} = await app.mysql.get('user', option);
+        return userInfo;
+    };
+
+    async updateUserInfo(row) {
+        const {app} = this;
+        const result = await app.mysql.update('user', row);
+        return result.affectedRows === 1;
+    };
+
     // 1 登录验证码 2 注册验证码 3 忘记密码
     async setVerifyCode(tempAuth, symbolCode=1, verifyType='normal') {
         const { app, ctx } = this;
