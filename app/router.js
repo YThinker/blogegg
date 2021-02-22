@@ -12,4 +12,5 @@ module.exports = app => {
   router.get('/getSecurityQuestion', controller.user.getSecurityQuestion);
   router.post('/forgetPwd', controller.user.forgetPwd);
   router.post('/changeUserInfo', jwt, controller.user.changeUserInfo);
+  router.get('/getUserInfoSecurity', jwt, controller.user.getUserInfoSecurity);
 };

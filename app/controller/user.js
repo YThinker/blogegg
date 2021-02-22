@@ -166,6 +166,10 @@ class UserController extends BaseController {
 
     /**
      * 忘记密码
+     * @param userId
+     * @param password
+     * @param answer
+     * @param verifyCode
      */
     async forgetPwd() {
       const forgetPwdValidate = validate.forgetPwd;
@@ -204,6 +208,21 @@ class UserController extends BaseController {
         this.error('修改密码失败，未知错误');
       } else {
         this.success();
+      }
+    };
+
+    /**
+     * 获取可公开用户信息
+     */
+    async getUserInfoSecurity() {
+      const { ctx, sevice } = this;
+      const userId = ctx.state.user;
+
+      const userInfoSecurity = await service.user.getUserInfoSecurity(userId);
+      if(!userInfoSecurity){
+        this.error('该用户不存在', 10001);
+      } else {
+        this.success(userInfoSecurity);
       }
     };
 
