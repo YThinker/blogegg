@@ -215,15 +215,18 @@ class UserController extends BaseController {
      * 获取可公开用户信息
      */
     async getUserInfoSecurity() {
-      const { ctx, sevice } = this;
-      const userId = ctx.state.user;
+      const { ctx, service } = this;
+      const userId = ctx.state.user.userId;
+      if(!userId){
+        this.error('token error');
+      }
 
       const userInfoSecurity = await service.user.getUserInfoSecurity(userId);
       if(!userInfoSecurity){
         this.error('该用户不存在', 10001);
-      } else {
-        this.success(userInfoSecurity);
+        return;
       }
+      this.success(userInfoSecurity);
     };
 
     /**
